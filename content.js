@@ -1,0 +1,1 @@
+alert("Bruh, you're in the content script!")
