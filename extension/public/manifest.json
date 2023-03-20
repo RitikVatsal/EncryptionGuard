@@ -1,0 +1,11 @@
+{
+	"manifest_version": 3,
+	"short_name": "React App",
+	"name": "Encryption Guard",
+	"description": "Encrypt your messages with a password",
+	"version": "1.0.0",
+	"action": {
+		"default_popup": "popup.html",
+		"default_title": "Encryption Guard"
+	}
+}
