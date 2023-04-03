@@ -7,5 +7,6 @@
 	"action": {
 		"default_popup": "popup.html",
 		"default_title": "Encryption Guard"
-	}
+	},
+	"permissions": ["activeTab, tabs"]
 }
