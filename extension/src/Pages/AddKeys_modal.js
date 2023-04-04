@@ -2,6 +2,8 @@ import CreatableSelect from "react-select/creatable";
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import { generatePassword } from "@nikitababko/password-generator";
+import CopyButton from "../Components/copyButton";
 
 function init_LocalStorage() {
 	if (!localStorage.getItem("websiteOptions")) {
@@ -30,6 +32,7 @@ function AddKeys_modal() {
 	const [savedKeys, setSavedKeys] = useState(false);
 	const [validated, setValidated] = useState(false);
 	const [websiteOptionError, setWebsiteOptionError] = useState(false);
+	const [copy, setCopy] = useState(false);
 
 	const update_LocalStorage = (value) => {
 		let websiteOptions = JSON.parse(localStorage.getItem("websiteOptions"));
@@ -53,6 +56,12 @@ function AddKeys_modal() {
 		setWebsiteOptionError(false);
 	};
 
+	const generateKey = () => {
+		const password = generatePassword({ length: 26 });
+		console.log(password);
+		document.getElementById("form_key").value = password;
+	};
+
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		if (!websiteValue || websiteValue.value == "") {
@@ -61,47 +70,65 @@ function AddKeys_modal() {
 		}
 
 		if (event.currentTarget.checkValidity() === false) {
-			event.preventDefault();
 			event.stopPropagation();
+			setValidated(true);
+		} else {
+			const entered_website = websiteValue.value;
+			const entered_keyName = event.target.form_keyName.value;
+			const entered_key = event.target.form_key.value;
+
+			let Keys = JSON.parse(localStorage.getItem("Keys"));
+			if (!Keys) Keys = {};
+			if (!Keys[entered_website]) Keys[entered_website] = {};
+			Keys[entered_website][entered_keyName] = entered_key;
+			localStorage.setItem("Keys", JSON.stringify(Keys));
+
+			setSavedKeys(true);
+			setTimeout(() => {
+				setSavedKeys(false);
+			}, 3000);
+			// reset form
+			setValidated(false);
+			event.target.form_keyName.value = "";
+			event.target.form_key.value = "";
+			setWebsiteValue(null);
 		}
-
-		setValidated(true);
-
-		const entered_website = websiteValue.value;
-		const entered_keyName = event.target.form_keyName.value;
-		const entered_key = event.target.form_key.value;
-
-		let Keys = JSON.parse(localStorage.getItem("Keys"));
-		if (!Keys) Keys = {};
-		if (!Keys[entered_website]) Keys[entered_website] = {};
-		Keys[entered_website][entered_keyName] = entered_key;
-		localStorage.setItem("Keys", JSON.stringify(Keys));
-
-		setSavedKeys(true);
-		setTimeout(() => {
-			setSavedKeys(false);
-		}, 3000);
 	};
 
 	return (
 		<>
 			<Form noValidate validated={validated} onSubmit={handleSubmit}>
+				{/* Website Name - WhatsApp, Telegram etc. */}
 				<Form.Group className='mb-3' controlId='form_website'>
 					<Form.Label>Website</Form.Label>
 					<CreatableSelect isClearable isDisabled={isLoading} isLoading={isLoading} onChange={handle_websiteOptionChange} onCreateOption={handleCreate} options={websiteOptions} value={websiteValue} />
 					{websiteOptionError && <p className='text-danger'>Please select a website</p>}
 				</Form.Group>
+
+				{/* Key name - that users enters and use to identify particular key */}
 				<Form.Group className='mb-3' controlId='form_keyName'>
 					<Form.Label>Add a name to the key</Form.Label>
 					<Form.Control required type='text' placeholder='...to identify this key (like recipient name)' />
 					<Form.Control.Feedback type='invalid'>Please provide a name</Form.Control.Feedback>
 				</Form.Group>
+
+				{/* Key */}
 				<Form.Group className='mb-3' controlId='form_key'>
-					<Form.Label>Key</Form.Label>
-					<Form.Control required type='text' placeholder='We suggest pasting the key' />
+					<div class='d-flex align-items-center justify-content-between'>
+						<Form.Label className='me-3'>Key</Form.Label>
+						<CopyButton idOfElementToCopy='form_key' />
+					</div>
+					<div class='d-flex justify-content-between w-100'>
+						<Form.Control required id='form_key' type='text' placeholder='A Strong Key' />
+						<Button variant='dark' onClick={generateKey} className='ms-1'>
+							Generate
+						</Button>
+					</div>
 					<Form.Control.Feedback type='invalid'>Please provide a valid key</Form.Control.Feedback>
 				</Form.Group>
-				<Button variant='dark' type='submit' className='my-2'>
+
+				{/* Submit button */}
+				<Button variant='dark' type='submit' size='sm' className='mb-2 mt-5 w-100'>
 					Store
 				</Button>
 				{savedKeys && <p className='text-success'>Key saved successfully</p>}
