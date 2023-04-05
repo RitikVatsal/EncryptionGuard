@@ -1,4 +1,4 @@
-import React, { useState, CSSProperties } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -30,7 +30,7 @@ function App() {
 	const [addKeyModalVisible, setAddKeyModalVisible] = useState(false);
 	const [keySelected, setKeySelected] = useState(null);
 	const [keySelectionError, setKeySelectionError] = useState(false);
-	const [detectionMode, setDetectionMode] = useState(0); // 0: auto, 1: encrypt, 2: decrypt
+	const [detectionMode, setDetectionMode] = useState(1); // 1: auto, 2: encrypt, 4: decrypt, 3: auto (plaintext detected), 5: auto (ciphertext detected)
 	const [validated, setValidated] = useState(false);
 	const [coptVisible, setCopyVisible] = useState(false);
 	const [status, setStatus] = useState("");
@@ -51,14 +51,14 @@ function App() {
 	}
 
 	const toggle_encrypt_or_decrypt = (text, key) => {
-		if (detectionMode == 1) return encrypt(text, key);
-		else if (detectionMode == 2) return decrypt(text, key);
+		if (detectionMode == 2) return encrypt(text, key);
+		else if (detectionMode == 4) return decrypt(text, key);
 		else if (is_text_plaintext(text)) {
-			setDetectionMode(1);
+			setDetectionMode(3);
 			setStatus("Encrypted");
 			return encrypt(text, key);
 		} else {
-			setDetectionMode(2);
+			setDetectionMode(5);
 			setStatus("Decrypted");
 			return decrypt(text, key);
 		}
@@ -110,6 +110,8 @@ function App() {
 	const handleSelectChange = (selectedOption) => {
 		setKeySelected(selectedOption);
 		setKeySelectionError(false);
+		setStatus("");
+		if (detectionMode % 2 == 1) setDetectionMode(1);
 	};
 	const formatGroupLabel = (data) => (
 		<div className='groupStyles d-flex justify-content-between'>
@@ -117,20 +119,27 @@ function App() {
 			<span className='groupBadgeStyles'>{data.options.length}</span>
 		</div>
 	);
+
+	const handleInputChange = (event) => {
+		// if value is empty, hide copy button
+		if (event.target.value == "") setCopyVisible(false);
+		setStatus("");
+		if (detectionMode % 2 == 1) setDetectionMode(1);
+	};
 	return (
 		<div className='App mt-4'>
 			<h1 className='title'>Encryption Guard</h1>
 			<Form noValidate validated={validated} className='m-3' onSubmit={handleSubmit}>
 				<div style={{ position: "relative" }}>
-					<FloatingLabel controlId='user_input_text' label={`Enter your ${detectionMode == 0 ? "plaintext/ciphertext" : detectionMode == 1 ? "plaintext" : "ciphertext"} here`} className='my-2'>
-						<Form.Control required as='textarea' placeholder={`Enter your ${detectionMode == 0 ? "plaintext/ciphertext" : detectionMode == 1 ? "plaintext" : "ciphertext"} here`} style={{ minHeight: "300px" }} onChange={() => setStatus("")} />
+					<FloatingLabel controlId='user_input_text' label={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"} here`} className='my-2'>
+						<Form.Control required as='textarea' placeholder={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"} here`} style={{ minHeight: "300px" }} onChange={handleInputChange} />
 						<Form.Control.Feedback type='invalid'>Please enter some text</Form.Control.Feedback>
 					</FloatingLabel>
 					{coptVisible && <CopyButton className='position-absolute top-0 end-0 mt-2 me-2' idOfElementToCopy='user_input_text' />}
 				</div>
 
 				<div className='d-flex mt-3'>
-					<Select options={generateKeyOptions()} value={keySelected} onChange={handleSelectChange} formatGroupLabel={formatGroupLabel} className='w-100 me-2' placeholder={`Select the key ${detectionMode == 0 ? "" : detectionMode == 1 ? "to encrypt" : "to decrypt"}`} />
+					<Select options={generateKeyOptions()} value={keySelected} onChange={handleSelectChange} formatGroupLabel={formatGroupLabel} className='w-100 me-2' placeholder={`Select the key ${detectionMode == 1 ? "" : detectionMode == 2 ? "to encrypt" : "to decrypt"}`} />
 					<OverlayTrigger trigger='hover' placement='left' overlay={popover}>
 						<Button variant='dark' onClick={handleShow}>
 							+
@@ -141,20 +150,20 @@ function App() {
 				<Form.Group className='mb-2 mt-3' controlId='form_keyName'>
 					<span>Detection Mode</span>
 					<ButtonGroup className='mb-2 w-100'>
-						<Button variant={detectionMode == 0 ? "dark" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(0)}>
+						<Button variant={detectionMode % 2 == 1 ? "dark" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(1)}>
 							Auto
 						</Button>
-						<Button variant={detectionMode == 1 ? "dark" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(1)}>
+						<Button variant={detectionMode == 2 ? "dark" : detectionMode == 3 ? "secondary" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(2)}>
 							Encrypt
 						</Button>
-						<Button variant={detectionMode == 2 ? "dark" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(2)}>
+						<Button variant={detectionMode == 4 ? "dark" : detectionMode == 5 ? "secondary" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(4)}>
 							Decrypt
 						</Button>
 					</ButtonGroup>
 				</Form.Group>
 
 				<Button className='mb-2 mt-3' variant='dark' type='submit' style={{ width: "100%" }}>
-					{status.length ? status : ["Convert", "Encrypt", "Decrypt"][detectionMode]}
+					{status.length ? status : detectionMode == 2 ? "Encrypt" : detectionMode == 4 ? "Decrypt" : "Convert"}
 				</Button>
 			</Form>
 
