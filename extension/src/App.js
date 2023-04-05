@@ -45,6 +45,7 @@ function App() {
 	const [anyFormError, setAnyFormError] = useState(false); // for height of textbox
 	const [convertedText, setConvertedText] = useState("");
 	const [autoCopyWorked, setAutoCopyWorked] = useState(false);
+	const [showShare, setShowShare] = useState(false);
 
 	const handleClose = () => setAddKeyModalVisible(false);
 	const handleShow = () => setAddKeyModalVisible(true);
@@ -83,6 +84,7 @@ function App() {
 			event.stopPropagation();
 			setValidated(true);
 			setAnyFormError(true);
+			setShowShare(false);
 		} else {
 			if (keySelected == null) {
 				setKeySelectionError(true);
@@ -111,6 +113,7 @@ function App() {
 					setAutoCopyWorked(false);
 				}, 4000);
 			}
+			setShowShare(true);
 		}
 	};
 
@@ -149,7 +152,9 @@ function App() {
 		// if value is empty, hide copy button
 		if (event.target.value == "") {
 			setCopyVisible(false);
+			setShowShare(false);
 		} else setAnyFormError(false);
+
 		setStatus("");
 		if (detectionMode % 2 == 1) setDetectionMode(1);
 	};
@@ -163,7 +168,6 @@ function App() {
 				<Settings />
 			) : (
 				<>
-					<Share url={convertedText} />
 					<Form noValidate validated={validated} className='m-3' onSubmit={handleSubmit} id='form'>
 						<div style={{ position: "relative" }}>
 							<FloatingLabel controlId='user_input_text' label={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"} here`} className='my-2'>
@@ -209,6 +213,7 @@ function App() {
 							</div>
 						</button>
 					</Form>
+					{showShare && <Share url={convertedText} />}
 				</>
 			)}
 			<Modal show={addKeyModalVisible} onHide={handleClose}>
