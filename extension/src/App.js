@@ -32,6 +32,7 @@ function App() {
 	const [keySelectionError, setKeySelectionError] = useState(false);
 	const [detectionMode, setDetectionMode] = useState(0); // 0: auto, 1: encrypt, 2: decrypt
 	const [validated, setValidated] = useState(false);
+	const [coptVisible, setCopyVisible] = useState(false);
 
 	const handleClose = () => setAddKeyModalVisible(false);
 	const handleShow = () => setAddKeyModalVisible(true);
@@ -48,7 +49,9 @@ function App() {
 	}
 
 	const toggle_encrypt_or_decrypt = (text, key) => {
-		if (is_text_plaintext(text)) return encrypt(text, key);
+		if (detectionMode == 1) return encrypt(text, key);
+		else if (detectionMode == 2) return decrypt(text, key);
+		else if (is_text_plaintext(text)) return encrypt(text, key);
 		else return decrypt(text, key);
 	};
 
@@ -65,13 +68,15 @@ function App() {
 				return;
 			}
 			setKeySelectionError(false);
-			const text = event.target.user_intput_text.value;
+			const text = event.target.user_input_text.value;
 			debug("user input text", text);
 
 			// change the text in the text area
-			event.target.user_intput_text.value = toggle_encrypt_or_decrypt(text, keySelected.value);
+			event.target.user_input_text.value = toggle_encrypt_or_decrypt(text, keySelected.value);
 			debug("Transformed text", toggle_encrypt_or_decrypt(text, keySelected.value));
 			setValidated(false);
+
+			setCopyVisible(true);
 		}
 	};
 
@@ -109,10 +114,10 @@ function App() {
 			<Form noValidate validated={validated} className='m-3' onSubmit={handleSubmit}>
 				<div style={{ position: "relative" }}>
 					<FloatingLabel controlId='user_input_text' label={`Enter your ${detectionMode == 0 ? "plaintext/ciphertext" : detectionMode == 1 ? "plaintext" : "ciphertext"} here`} className='my-2'>
-						<Form.Control required as='textarea' placeholder={`Enter your ${detectionMode == 0 ? "plaintext/ciphertext" : detectionMode == 1 ? "plaintext" : "ciphertext"} here`} style={{ minHeight: "300px" }} onChange={() => setError("")} />
+						<Form.Control required as='textarea' placeholder={`Enter your ${detectionMode == 0 ? "plaintext/ciphertext" : detectionMode == 1 ? "plaintext" : "ciphertext"} here`} style={{ minHeight: "300px" }} />
 						<Form.Control.Feedback type='invalid'>Please enter some text</Form.Control.Feedback>
 					</FloatingLabel>
-					<CopyButton className='position-absolute top-0 end-0 mt-2 me-2' idOfElementToCopy='user_input_text' />
+					{coptVisible && <CopyButton className='position-absolute top-0 end-0 mt-2 me-2' idOfElementToCopy='user_input_text' />}
 				</div>
 
 				<div className='d-flex mt-3'>

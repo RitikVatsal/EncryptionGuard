@@ -14,7 +14,7 @@ function CopyButton(props) {
 	};
 	return (
 		<div className={props.className}>
-			<Button variant='light' size='sm' onClick={handleCopy} className='mb-2 ms-5 me-0 align-items-center' hidden={document.getElementById("form-key") && document.getElementById("form-key").value.length < 1}>
+			<Button variant='light' size='sm' onClick={handleCopy} className='mb-2 ms-5 me-0 align-items-center'>
 				{copy ? (
 					<span className='text-success'>
 						<BsCheck2 className='me-1' /> Copied
