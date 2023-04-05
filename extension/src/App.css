@@ -1,3 +1,5 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:700);
+
 .App {
 	text-align: center;
 	border-radius: 20px;
@@ -27,4 +29,85 @@
 	min-width: 1px;
 	padding: 0.16666666666667em 0.5em;
 	text-align: center;
+}
+
+.settings-icon {
+	width: 25px;
+	height: 25px;
+	animation: rotate-left 0.2s ease-in-out;
+	-webkit-animation: rotate-left 0.2s ease-in-out;
+}
+.settings-icon:hover {
+	cursor: pointer;
+	animation: rotate-right 0.2s ease-in-out;
+	-webkit-animation: rotate-right 0.2s ease-in-out;
+}
+.settings-icon:active {
+	transform: scale(0.9);
+}
+@keyframes rotate-right {
+	0% {
+		transform: rotate(0);
+	}
+	100% {
+		transform: rotate(75deg);
+	}
+}
+@keyframes rotate-left {
+	0% {
+		-webkit-transform: rotate(0);
+	}
+	100% {
+		-webkit-transform: rotate(-75deg);
+	}
+}
+.button {
+	background: #212529;
+	margin: auto auto;
+	width: 200px;
+	height: 40px;
+	overflow: hidden;
+	text-align: center;
+	transition: 0.2s;
+	cursor: pointer;
+	border-radius: 3px;
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+	align-items: center;
+	border: 0px;
+	/* justify-content: center; */
+}
+.btnTwo {
+	position: relative;
+	width: 200px;
+	height: 100px;
+	margin-top: -100px;
+	padding-top: 0.5px;
+	background: #26a69a;
+	left: -250px;
+	transition: 0.3s;
+	border: 0px;
+}
+.btnText {
+	margin-top: 2%;
+	font-family: "Roboto", sans-serif;
+	color: white;
+	transition: 0.3s;
+}
+.btnText2 {
+	margin-top: 63px;
+	margin-right: -130px;
+	color: #fff;
+	font-family: "Roboto", sans-serif;
+}
+.button:hover .btnTwo {
+	/*When hovering over .button change .btnTwo*/
+	left: -130px;
+}
+.button:hover .btnText {
+	/*When hovering over .button change .btnText*/
+	margin-left: 65px;
+}
+.button:active {
+	/*Clicked and held*/
+	box-shadow: 0px 5px 6px rgba(0, 0, 0, 0.3);
 }

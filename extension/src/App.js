@@ -11,6 +11,8 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
 import CopyButton from "./Components/copyButton";
+import { AiFillSetting } from "react-icons/ai";
+import Settings from "./Pages/Settings";
 
 const popover = (
 	<Popover id='popover-basic'>
@@ -34,6 +36,8 @@ function App() {
 	const [validated, setValidated] = useState(false);
 	const [coptVisible, setCopyVisible] = useState(false);
 	const [status, setStatus] = useState("");
+	const [settingsVisible, setSettingsVisible] = useState(false);
+	const [anyFormError, setAnyFormError] = useState(false); // for height of textbox
 
 	const handleClose = () => setAddKeyModalVisible(false);
 	const handleShow = () => setAddKeyModalVisible(true);
@@ -71,11 +75,13 @@ function App() {
 		if (event.currentTarget.checkValidity() === false) {
 			event.stopPropagation();
 			setValidated(true);
+			setAnyFormError(true);
 		} else {
 			if (keySelected == null) {
 				setKeySelectionError(true);
 				return;
 			}
+			setAnyFormError(false);
 			setKeySelectionError(false);
 			const text = event.target.user_input_text.value;
 			debug("user input text", text);
@@ -122,52 +128,63 @@ function App() {
 
 	const handleInputChange = (event) => {
 		// if value is empty, hide copy button
-		if (event.target.value == "") setCopyVisible(false);
+		if (event.target.value == "") {
+			setCopyVisible(false);
+			setAnyFormError(true);
+		} else setAnyFormError(false);
 		setStatus("");
 		if (detectionMode % 2 == 1) setDetectionMode(1);
 	};
 	return (
 		<div className='App mt-4'>
-			<h1 className='title'>Encryption Guard</h1>
-			<Form noValidate validated={validated} className='m-3' onSubmit={handleSubmit}>
-				<div style={{ position: "relative" }}>
-					<FloatingLabel controlId='user_input_text' label={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"} here`} className='my-2'>
-						<Form.Control required as='textarea' placeholder={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"} here`} style={{ minHeight: "300px" }} onChange={handleInputChange} />
-						<Form.Control.Feedback type='invalid'>Please enter some text</Form.Control.Feedback>
-					</FloatingLabel>
-					{coptVisible && <CopyButton className='position-absolute top-0 end-0 mt-2 me-2' idOfElementToCopy='user_input_text' />}
-				</div>
+			<div className='d-flex justify-content-between mx-3'>
+				<h1 className='title w-100'>Encryption Guard</h1>
+				<AiFillSetting className='settings-icon' onClick={() => setSettingsVisible(!settingsVisible)} />
+			</div>
+			{settingsVisible ? (
+				<Settings />
+			) : (
+				<Form noValidate validated={validated} className='m-3' onSubmit={handleSubmit} id='form'>
+					<div style={{ position: "relative" }}>
+						<FloatingLabel controlId='user_input_text' label={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"} here`} className='my-2'>
+							<Form.Control required as='textarea' placeholder={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"} here`} style={{ minHeight: anyFormError ? "275px" : "300px" }} onChange={handleInputChange} />
+							<Form.Control.Feedback type='invalid'>Please enter some text</Form.Control.Feedback>
+						</FloatingLabel>
+						{coptVisible && <CopyButton className='position-absolute top-0 end-0 mt-2 me-2' idOfElementToCopy='user_input_text' />}
+					</div>
 
-				<div className='d-flex mt-3'>
-					<Select options={generateKeyOptions()} value={keySelected} onChange={handleSelectChange} formatGroupLabel={formatGroupLabel} className='w-100 me-2' placeholder={`Select the key ${detectionMode == 1 ? "" : detectionMode == 2 ? "to encrypt" : "to decrypt"}`} />
-					<OverlayTrigger trigger='hover' placement='left' overlay={popover}>
-						<Button variant='dark' onClick={handleShow}>
-							+
-						</Button>
-					</OverlayTrigger>
-				</div>
-				{keySelectionError && <p className='text-danger'>Please select a key</p>}
-				<Form.Group className='mb-2 mt-3' controlId='form_keyName'>
-					<span>Detection Mode</span>
-					<ButtonGroup className='mb-2 w-100'>
-						<Button variant={detectionMode % 2 == 1 ? "dark" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(1)}>
-							Auto
-						</Button>
-						<Button variant={detectionMode == 2 ? "dark" : detectionMode == 3 ? "secondary" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(2)}>
-							Encrypt
-						</Button>
-						<Button variant={detectionMode == 4 ? "dark" : detectionMode == 5 ? "secondary" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(4)}>
-							Decrypt
-						</Button>
-					</ButtonGroup>
-				</Form.Group>
+					<div className='d-flex mt-3'>
+						<Select options={generateKeyOptions()} value={keySelected} onChange={handleSelectChange} formatGroupLabel={formatGroupLabel} className='w-100 me-2' placeholder={`Select the key ${detectionMode == 1 ? "" : detectionMode == 2 ? "to encrypt" : "to decrypt"}`} />
+						<OverlayTrigger trigger='hover' placement='left' overlay={popover}>
+							<Button variant='dark' onClick={handleShow}>
+								+
+							</Button>
+						</OverlayTrigger>
+					</div>
+					{keySelectionError && <p className='text-danger'>Please select a key</p>}
+					<Form.Group className='mb-2 mt-3' controlId='form_keyName'>
+						<span>Detection Mode</span>
+						<ButtonGroup className='mb-2 w-100'>
+							<Button variant={detectionMode % 2 == 1 ? "dark" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(1)}>
+								Auto
+							</Button>
+							<Button variant={detectionMode == 2 ? "dark" : detectionMode == 3 ? "secondary" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(2)}>
+								Encrypt
+							</Button>
+							<Button variant={detectionMode == 4 ? "dark" : detectionMode == 5 ? "secondary" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(4)}>
+								Decrypt
+							</Button>
+						</ButtonGroup>
+					</Form.Group>
 
-				<Button className='mb-2 mt-3' variant='dark' type='submit' style={{ width: "100%" }}>
-					{status.length ? status : detectionMode == 2 ? "Encrypt" : detectionMode == 4 ? "Decrypt" : "Convert"}
-				</Button>
-			</Form>
-
-			{/* <!-- Modal --> */}
+					<button className='button rounded w-100 mt-2' type='submit' onClick={() => document.getElementById("form").dispatchEvent(new Event("submit"))}>
+						<p className='btnText'>{status.length ? status : detectionMode == 2 ? "Encrypt" : detectionMode == 4 ? "Decrypt" : "Convert"}</p>
+						<div className='btnTwo'>
+							<p className='btnText2'>GO!</p>
+						</div>
+					</button>
+				</Form>
+			)}
 			<Modal show={addKeyModalVisible} onHide={handleClose}>
 				<Modal.Header closeButton>
 					<Modal.Title>Add Keys</Modal.Title>
