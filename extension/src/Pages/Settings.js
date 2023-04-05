@@ -1,10 +1,16 @@
 import React, { useState } from "react";
-import Accordion from "react-bootstrap/Accordion";
+// Icons
 import { IoSettingsOutline } from "react-icons/io5";
-import { MdVpnKey } from "react-icons/md";
+import { VscKey } from "react-icons/vsc";
+import { RiFolderTransferLine } from "react-icons/ri";
+// Bootstrap components
+import Accordion from "react-bootstrap/Accordion";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+// Custom Components
 import SettingsNav from "../Components/SettingsNav";
+import GeneralSettings from "./GeneralSettings";
+import KeyManagement from "./KeyManagement";
 
 function Settings() {
 	const [settingsPage, setSettingsPage] = useState("Settings");
@@ -14,14 +20,14 @@ function Settings() {
 				<div className='m-3'>
 					<div className='m-3'>
 						<SettingsNav icon={<IoSettingsOutline style={{ width: "20px", height: "20px" }} />} title='General' onClick={() => setSettingsPage("General")} />
-						<SettingsNav icon={<MdVpnKey style={{ width: "20px", height: "20px" }} />} title='Key Management' onClick={() => setSettingsPage("Key Management")} />
-						<SettingsNav icon={<MdVpnKey style={{ width: "20px", height: "20px" }} />} title='Keys Import/Export' onClick={() => setSettingsPage("Keys Import/Export")} />
+						<SettingsNav icon={<VscKey style={{ width: "20px", height: "20px" }} />} title='Key Management' onClick={() => setSettingsPage("Key Management")} />
+						<SettingsNav icon={<RiFolderTransferLine style={{ width: "20px", height: "20px" }} />} title='Keys Import/Export' onClick={() => setSettingsPage("Keys Import/Export")} />
 					</div>
 				</div>
 			) : settingsPage === "General" ? (
-				<h1>General</h1>
+				<GeneralSettings />
 			) : settingsPage === "Key Management" ? (
-				<h1>Key Management</h1>
+				<KeyManagement />
 			) : settingsPage === "Keys Import/Export" ? (
 				<h1>Import/Export</h1>
 			) : null}
