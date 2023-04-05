@@ -114,12 +114,12 @@ function AddKeys_modal() {
 				</Form.Group>
 
 				{/* Key */}
-				<Form.Group className='mb-3' controlId='form_key'>
-					<div class='d-flex align-items-center justify-content-between'>
+				<Form.Group className='mb-3'>
+					<div className='d-flex align-items-center justify-content-between'>
 						<Form.Label className='me-3'>Key</Form.Label>
 						<CopyButton idOfElementToCopy='form_key' />
 					</div>
-					<div class='d-flex justify-content-between w-100'>
+					<div className='d-flex justify-content-between w-100'>
 						<Form.Control required id='form_key' type='text' placeholder='A Strong Key' />
 						<Button variant='dark' onClick={generateKey} className='ms-1'>
 							Generate

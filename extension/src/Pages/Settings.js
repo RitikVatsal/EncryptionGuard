@@ -4,13 +4,12 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { VscKey } from "react-icons/vsc";
 import { RiFolderTransferLine } from "react-icons/ri";
 // Bootstrap components
-import Accordion from "react-bootstrap/Accordion";
-import Tab from "react-bootstrap/Tab";
-import Tabs from "react-bootstrap/Tabs";
+
 // Custom Components
 import SettingsNav from "../Components/SettingsNav";
 import GeneralSettings from "./GeneralSettings";
 import KeyManagement from "./KeyManagement";
+import ImportExportKeys from "./ImportExportKeys";
 
 function Settings() {
 	const [settingsPage, setSettingsPage] = useState("Settings");
@@ -29,7 +28,7 @@ function Settings() {
 			) : settingsPage === "Key Management" ? (
 				<KeyManagement />
 			) : settingsPage === "Keys Import/Export" ? (
-				<h1>Import/Export</h1>
+				<ImportExportKeys />
 			) : null}
 		</>
 	);
