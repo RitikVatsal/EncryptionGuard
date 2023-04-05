@@ -33,9 +33,11 @@ function App() {
 	const [detectionMode, setDetectionMode] = useState(0); // 0: auto, 1: encrypt, 2: decrypt
 	const [validated, setValidated] = useState(false);
 	const [coptVisible, setCopyVisible] = useState(false);
+	const [status, setStatus] = useState("");
 
 	const handleClose = () => setAddKeyModalVisible(false);
 	const handleShow = () => setAddKeyModalVisible(true);
+
 	function encrypt(pllaintext, key) {
 		var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(pllaintext), key).toString();
 		return ciphertext;
@@ -51,8 +53,15 @@ function App() {
 	const toggle_encrypt_or_decrypt = (text, key) => {
 		if (detectionMode == 1) return encrypt(text, key);
 		else if (detectionMode == 2) return decrypt(text, key);
-		else if (is_text_plaintext(text)) return encrypt(text, key);
-		else return decrypt(text, key);
+		else if (is_text_plaintext(text)) {
+			setDetectionMode(1);
+			setStatus("Encrypted");
+			return encrypt(text, key);
+		} else {
+			setDetectionMode(2);
+			setStatus("Decrypted");
+			return decrypt(text, key);
+		}
 	};
 
 	const handleSubmit = (event) => {
@@ -114,7 +123,7 @@ function App() {
 			<Form noValidate validated={validated} className='m-3' onSubmit={handleSubmit}>
 				<div style={{ position: "relative" }}>
 					<FloatingLabel controlId='user_input_text' label={`Enter your ${detectionMode == 0 ? "plaintext/ciphertext" : detectionMode == 1 ? "plaintext" : "ciphertext"} here`} className='my-2'>
-						<Form.Control required as='textarea' placeholder={`Enter your ${detectionMode == 0 ? "plaintext/ciphertext" : detectionMode == 1 ? "plaintext" : "ciphertext"} here`} style={{ minHeight: "300px" }} />
+						<Form.Control required as='textarea' placeholder={`Enter your ${detectionMode == 0 ? "plaintext/ciphertext" : detectionMode == 1 ? "plaintext" : "ciphertext"} here`} style={{ minHeight: "300px" }} onChange={() => setStatus("")} />
 						<Form.Control.Feedback type='invalid'>Please enter some text</Form.Control.Feedback>
 					</FloatingLabel>
 					{coptVisible && <CopyButton className='position-absolute top-0 end-0 mt-2 me-2' idOfElementToCopy='user_input_text' />}
@@ -145,7 +154,7 @@ function App() {
 				</Form.Group>
 
 				<Button className='mb-2 mt-3' variant='dark' type='submit' style={{ width: "100%" }}>
-					{detectionMode == 0 ? "Convert" : detectionMode == 1 ? "Encrypt" : "Decrypt"}
+					{status.length ? status : ["Convert", "Encrypt", "Decrypt"][detectionMode]}
 				</Button>
 			</Form>
 
