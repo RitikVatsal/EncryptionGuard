@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
 import { VscKey } from "react-icons/vsc";
 import { RiFolderTransferLine } from "react-icons/ri";
-import { MdChevronLeft, MdClose } from "react-icons/md";
+import { MdChevronLeft } from "react-icons/md";
 // Bootstrap components
 
 // Custom Components
@@ -16,7 +16,15 @@ import "../Components/Settings.css";
 
 function Settings() {
 	const [settingsPage, setSettingsPage] = useState(0);
+	const [icon, setIcon] = useState(<MdChevronLeft style={{ width: "30px", height: "30px" }} />);
 
+	const handleMouseEnter = () => {
+		setIcon(<MdArrowBack style={{ width: "30px", height: "30px" }} />);
+	};
+
+	const handleMouseLeave = () => {
+		setIcon(<MdChevronLeft style={{ width: "30px", height: "30px" }} />);
+	};
 	return (
 		<>
 			{settingsPage > 9 && (
