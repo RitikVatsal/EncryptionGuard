@@ -6,9 +6,6 @@
 	transition: ease-in-out 0.3s;
 }
 .settings-nav-container:hover {
-	/* box-shadow: inset 400px 0 0 0 black; */
-	/* background-color: black; */
-	/* color: whitesmoke; */
 	box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
@@ -19,4 +16,25 @@
 	width: 35px;
 	background-color: black;
 	color: whitesmoke;
+}
+
+.back-btn {
+	cursor: pointer;
+}
+.back-btn:hover {
+	transform: scale(1.05);
+}
+.btn:active {
+	border: 0px !important;
+}
+
+.delete-icon {
+	color: rgb(150, 150, 150);
+	-webkit-transition: ease-in 0.2s;
+	-moz-transition: ease-in 0.2s;
+	transition: ease-in 0.2s;
+}
+.delete-icon:hover {
+	color: red;
+	transform: scale(1.1);
 }
