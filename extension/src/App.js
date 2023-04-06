@@ -58,6 +58,12 @@ function App() {
 	function decrypt(ciphertext, key) {
 		var bytes = CryptoJS.AES.decrypt(ciphertext, key);
 		var originalText = bytes.toString(CryptoJS.enc.Utf8);
+		console.log("originalText", originalText);
+		if (originalText === "" || originalText === undefined) {
+			console.log("Invalid Key/Ciphertext");
+			setStatus("Invalid Key/Ciphertext");
+			return "";
+		}
 		// slice to remove extra quotes at beginning and end
 		return originalText.slice(1, -1);
 	}
@@ -206,7 +212,7 @@ function App() {
 							</ButtonGroup>
 						</Form.Group>
 
-						<button className='button rounded w-100 mt-2' type='submit' onClick={() => document.getElementById("form").dispatchEvent(new Event("submit"))}>
+						<button className={`button rounded w-100 mt-2 ${status == "Invalid Key/Ciphertext" ? "bg-danger" : status == "Encrypted" || status == "Decrypted" ? "bg-success" : ""}`} type='submit' onClick={() => document.getElementById("form").dispatchEvent(new Event("submit"))}>
 							<p className='btnText'>{status.length ? status : detectionMode == 2 ? "Encrypt" : detectionMode == 4 ? "Decrypt" : "Convert"}</p>
 							<div className='btnTwo'>
 								<p className='btnText2'>GO!</p>
