@@ -167,7 +167,13 @@ function App() {
 	return (
 		<div className='App mt-4'>
 			<div className='d-flex justify-content-between mx-3'>
-				<h1 className='title w-100'>Encryption Guard</h1>
+				<h1 className='title w-100 text-light'>Encryption Guard</h1>
+				<div className='center w-100 ms-0' style={{ zIndex: "99", top: "2.25%", transform: "scale(0.6)", left: "0%" }}>
+					<a href='#'>
+						<span data-attr='Encryption'>Encryption</span>
+						<span data-attr='Guard'>Guard</span>
+					</a>
+				</div>
 				<AiFillSetting className='settings-icon' onClick={() => setSettingsVisible(!settingsVisible)} />
 			</div>
 			{settingsVisible ? (
