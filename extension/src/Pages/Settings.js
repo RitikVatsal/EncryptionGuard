@@ -16,12 +16,10 @@ function Settings() {
 	return (
 		<>
 			{settingsPage === "Settings" ? (
-				<div className='m-3'>
-					<div className='m-3'>
-						<SettingsNav icon={<IoSettingsOutline style={{ width: "20px", height: "20px" }} />} title='General' onClick={() => setSettingsPage("General")} />
-						<SettingsNav icon={<VscKey style={{ width: "20px", height: "20px" }} />} title='Key Management' onClick={() => setSettingsPage("Key Management")} />
-						<SettingsNav icon={<RiFolderTransferLine style={{ width: "20px", height: "20px" }} />} title='Keys Import/Export' onClick={() => setSettingsPage("Keys Import/Export")} />
-					</div>
+				<div className='m-3 mt-5'>
+					<SettingsNav icon={<IoSettingsOutline style={{ width: "20px", height: "20px" }} />} title='General' onClick={() => setSettingsPage("General")} />
+					<SettingsNav icon={<VscKey style={{ width: "20px", height: "20px" }} />} title='Key Management' onClick={() => setSettingsPage("Key Management")} />
+					<SettingsNav icon={<RiFolderTransferLine style={{ width: "20px", height: "20px" }} />} title='Keys Import/Export' onClick={() => setSettingsPage("Keys Import/Export")} />
 				</div>
 			) : settingsPage === "General" ? (
 				<GeneralSettings />
