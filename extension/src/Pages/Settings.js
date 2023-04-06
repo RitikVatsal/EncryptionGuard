@@ -16,15 +16,6 @@ import "../Components/Settings.css";
 
 function Settings() {
 	const [settingsPage, setSettingsPage] = useState(0);
-	const [icon, setIcon] = useState(<MdChevronLeft style={{ width: "30px", height: "30px" }} />);
-
-	const handleMouseEnter = () => {
-		setIcon(<MdArrowBack style={{ width: "30px", height: "30px" }} />);
-	};
-
-	const handleMouseLeave = () => {
-		setIcon(<MdChevronLeft style={{ width: "30px", height: "30px" }} />);
-	};
 	return (
 		<>
 			{settingsPage > 9 && (
