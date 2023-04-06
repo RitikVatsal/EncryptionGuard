@@ -43,12 +43,12 @@ function GeneralSettings() {
 
 			<Form.Group className='my-3' controlId='form_autoCopy'>
 				<div className='d-flex justify-content-between align-items-center'>
-					<Form.Label style={{ margin: "auto 0" }}>Auto copy to clipboard after enc/dec </Form.Label>
-					<Form.Check type='switch' checked={autoCopy} onChange={() => setAutoCopy(!autoCopy)} />
+					<Form.Label style={{ margin: "auto 0" }}>Auto copy to clipboard </Form.Label>
+					<Form.Check style={{ transform: "scale(1.2)" }} type='switch' checked={autoCopy} onChange={() => setAutoCopy(!autoCopy)} />
 				</div>
 			</Form.Group>
 
-			<Button variant='dark' type='submit' size='sm' className='mb-2 mt-5 w-100'>
+			<Button variant='dark' type='submit' className='mb-2 mt-5 w-100'>
 				{saveStatue ? "✓ Saved" : "Save"}
 			</Button>
 		</Form>
