@@ -3,7 +3,9 @@ import Table from "react-bootstrap/Table";
 import Accordion from "react-bootstrap/Accordion";
 import { MdDelete } from "react-icons/md";
 import NoKeys from "../Images/3973480.svg";
-
+import { confirmAlert } from "react-confirm-alert"; // Import
+import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
+import "../Components/Settings.css";
 function KeyManagement() {
 	const [keys, setKeys] = useState(JSON.parse(localStorage.getItem("Keys")) || {});
 	const [show, setShow] = useState(true);
@@ -14,10 +16,27 @@ function KeyManagement() {
 	}, []);
 
 	const handleDelete = (website, key_name) => {
-		const updatedKeys = { ...keys };
-		delete updatedKeys[website][key_name];
-		setKeys(updatedKeys);
-		localStorage.setItem("Keys", JSON.stringify(updatedKeys));
+		confirmAlert({
+			title: "Confirm to Delete",
+			message: `Are you sure you want to delete Key-${key_name}?`,
+			buttons: [
+				{
+					label: "Yes",
+					onClick: () => {
+						const updatedKeys = { ...keys };
+						delete updatedKeys[website][key_name];
+						setKeys(updatedKeys);
+						localStorage.setItem("Keys", JSON.stringify(updatedKeys));
+					},
+				},
+				{
+					label: "No",
+					onClick: () => {
+						return;
+					},
+				},
+			],
+		});
 	};
 
 	function generateTable(website, Keys) {
@@ -28,7 +47,7 @@ function KeyManagement() {
 					<td>{key_name}</td>
 					<td>{Keys[website][key_name]}</td>
 					<td>
-						<MdDelete className='text-danger' id={website + "-" + key_name} onClick={() => handleDelete(website, key_name)} />
+						<MdDelete className='delete-icon' style={{ width: "25px", height: "25px" }} id={website + "-" + key_name} onClick={() => handleDelete(website, key_name)} />
 					</td>
 				</tr>
 			);
