@@ -167,8 +167,10 @@ function App() {
 	return (
 		<div className='App mt-4'>
 			<div className='d-flex justify-content-between mx-3'>
-				<h1 className='title w-100 text-light'>Encryption Guard</h1>
-				<div className='center w-100 ms-0' style={{ zIndex: "99", top: "2.25%", transform: "scale(0.6)", left: "0%" }}>
+				<h1 className='title w-100' style={{ color: "white" }}>
+					Encryption Guard
+				</h1>
+				<div className='center w-100 ms-0' style={{ zIndex: "99", top: "2.25%", transform: "scale(0.6)", left: "0%" }} onClick={() => setSettingsVisible(false)}>
 					<a href='#'>
 						<span data-attr='Encryption'>Encryption</span>
 						<span data-attr='Guard'>Guard</span>
@@ -188,7 +190,7 @@ function App() {
 							</FloatingLabel>
 							{coptVisible && <CopyButton className='position-absolute bottom-0 end-0 mt-2 me-2' idOfElementToCopy='user_input_text' />}
 							{autoCopyWorked && (
-								<Button size='sm' variant='light' className='position-absolute bottom-0 start-0 mb-2 ms-2'>
+								<Button size='sm' className='position-absolute bottom-0 start-0 mb-2 ms-2' style={{ background: "#02b69c" }}>
 									Auto Copied!
 								</Button>
 							)}
