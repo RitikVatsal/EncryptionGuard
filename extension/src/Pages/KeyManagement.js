@@ -5,8 +5,8 @@ import { MdDelete } from "react-icons/md";
 import NoKeys from "../Images/3973480.svg";
 
 function KeyManagement() {
-	const [keys, setKeys] = useState({});
-	const [show, setShow] = useState(false);
+	const [keys, setKeys] = useState(JSON.parse(localStorage.getItem("Keys")) || {});
+	const [show, setShow] = useState(true);
 
 	useEffect(() => {
 		const storedKeys = JSON.parse(localStorage.getItem("Keys")) || {};
@@ -37,10 +37,12 @@ function KeyManagement() {
 	}
 
 	function generateAccordion() {
+		let found_key = false;
 		let accordion = [];
 		for (let website in keys) {
-			if (Object.keys(keys[website]).length === 0) continue;
-			setShow(true);
+			// check if website has any keys
+			if (Object.keys(keys[website]).length == 0) continue;
+			found_key = true;
 			accordion.push(
 				<Accordion.Item eventKey={website} key={website}>
 					<Accordion.Header>{website}</Accordion.Header>
@@ -59,6 +61,7 @@ function KeyManagement() {
 				</Accordion.Item>
 			);
 		}
+		if (!found_key) setShow(false);
 		return accordion;
 	}
 	return (
@@ -66,12 +69,10 @@ function KeyManagement() {
 			{show ? (
 				<Accordion className='mt-3'>{generateAccordion()}</Accordion>
 			) : (
-				<>
-					<div className='d-flex flex-column align-items-center justify-content-center'>
-						<img src={NoKeys} alt='Keys Missing Image' style={{ transform: "scale(0.4)", marginBottom: "-150px" }} />
-						<h1 className='text-center mt-5'>No Keys Found</h1>
-					</div>
-				</>
+				<div className='d-flex flex-column align-items-center justify-content-center'>
+					<img src={NoKeys} alt='Keys Missing Image' style={{ transform: "scale(0.4)", marginBottom: "-150px" }} />
+					<h1 className='text-center mt-5'>No Keys Found</h1>
+				</div>
 			)}
 		</>
 	);
