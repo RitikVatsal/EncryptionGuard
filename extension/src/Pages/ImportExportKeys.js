@@ -48,7 +48,6 @@ function ImportExportKeys() {
 										existingKeys[website][key_name] = importedKeys[website][key_name];
 									}
 								}
-								console.log("updated keys comb", existingKeys);
 								// localStorage.setItem("Keys", JSON.stringify(existingKeys));
 								setImportSuccess(true);
 								setTimeout(() => {

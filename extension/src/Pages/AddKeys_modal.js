@@ -59,7 +59,6 @@ function AddKeys_modal() {
 	const generateKey = () => {
 		const keyLength = localStorage.getItem("DefaultKeyLength") ? localStorage.getItem("DefaultKeyLength") : 26;
 		const password = generatePassword({ length: keyLength });
-		console.log(password);
 		document.getElementById("form_key").value = password;
 	};
 

@@ -28,11 +28,6 @@ const popover = (
 	</Popover>
 );
 
-const DEBUG = true;
-function debug(parameterName, parameter) {
-	if (DEBUG) console.log(parameterName + ": " + parameter);
-}
-
 function App() {
 	const [addKeyModalVisible, setAddKeyModalVisible] = useState(false);
 	const [keySelected, setKeySelected] = useState(null);
@@ -58,11 +53,9 @@ function App() {
 	function decrypt(ciphertext, key) {
 		var bytes = CryptoJS.AES.decrypt(ciphertext, key);
 		var originalText = bytes.toString(CryptoJS.enc.Utf8);
-		console.log("originalText", originalText);
 		if (originalText === "" || originalText === undefined) {
-			console.log("Invalid Key/Ciphertext");
 			setStatus("Invalid Key/Ciphertext");
-			return "";
+			return ciphertext;
 		}
 		// slice to remove extra quotes at beginning and end
 		return originalText.slice(1, -1);
@@ -84,7 +77,6 @@ function App() {
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		console.log(event);
 
 		if (event.currentTarget.checkValidity() === false) {
 			event.stopPropagation();
@@ -99,19 +91,16 @@ function App() {
 			setAnyFormError(false);
 			setKeySelectionError(false);
 			const text = event.target.user_input_text.value;
-			debug("user input text", text);
 
 			// change the text in the text area
 			const converted_text = toggle_encrypt_or_decrypt(text, keySelected.value);
 			setConvertedText(converted_text);
 			event.target.user_input_text.value = converted_text;
-			debug("Transformed text", toggle_encrypt_or_decrypt(text, keySelected.value));
 			setValidated(false);
 			setCopyVisible(true);
 
-			if (localStorage.getItem("AutoCopy") == "true") {
+			if (localStorage.getItem("AutoCopy") == "true" && text !== converted_text) {
 				navigator.clipboard.writeText(converted_text);
-
 				setTimeout(() => {
 					setAutoCopyWorked(true);
 				}, 300);
@@ -137,7 +126,6 @@ function App() {
 			for (let key in keys[website]) options.push({ value: key, label: key });
 			keyOptions.push({ label: website, options: options });
 		}
-		debug("key options", keyOptions);
 		return keyOptions;
 	};
 
@@ -223,7 +211,7 @@ function App() {
 						<button className={`button rounded w-100 mt-2 ${status == "Invalid Key/Ciphertext" ? "bg-danger" : status == "Encrypted" || status == "Decrypted" ? "bg-success" : ""}`} type='submit' onClick={() => document.getElementById("form").dispatchEvent(new Event("submit"))}>
 							<p className='btnText'>{status.length ? status : detectionMode == 2 ? "Encrypt" : detectionMode == 4 ? "Decrypt" : "Convert"}</p>
 							<div className='btnTwo'>
-								<p className='btnText2'>GO!</p>
+								<p className='btnText2'>{status == "Invalid Key/Ciphertext" ? "😨" : status.length > 0 ? "👍" : "GO!"}</p>
 							</div>
 						</button>
 					</Form>
