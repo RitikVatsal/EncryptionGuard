@@ -1,12 +1,12 @@
 # EncryptionGuard
 
-## Development
+## Development Mode
 Add the `EncryptionGuard\extension\dist` folder in browser's developer mode
 
-npm run dev
+In /extension,$npm run dev
 
 
-## Production
-npm run build
-
+## Production Mode
 Add the `EncryptionGuard\extension\build` folder in browser's developer mode
+
+In /extension, $npm run build
