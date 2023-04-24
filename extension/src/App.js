@@ -152,6 +152,12 @@ function App() {
 		setStatus("");
 		if (detectionMode % 2 == 1) setDetectionMode(1);
 	};
+
+	const handleModeChange = (mode) => {
+		setDetectionMode(mode);
+		setStatus("");
+	};
+
 	return (
 		<div className='App mt-4'>
 			<div className='d-flex justify-content-between mx-3'>
@@ -196,13 +202,13 @@ function App() {
 						<Form.Group className='mb-2 mt-3' controlId='form_keyName'>
 							<span>Detection Mode</span>
 							<ButtonGroup className='mb-2 w-100'>
-								<Button variant={detectionMode % 2 == 1 ? "dark" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(1)}>
+								<Button variant={detectionMode % 2 == 1 ? "dark" : "outline-dark"} className='w-25' onClick={() => handleModeChange(1)}>
 									Auto
 								</Button>
-								<Button variant={detectionMode == 2 ? "dark" : detectionMode == 3 ? "secondary" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(2)}>
+								<Button variant={detectionMode == 2 ? "dark" : detectionMode == 3 ? "secondary" : "outline-dark"} className='w-25' onClick={() => handleModeChange(2)}>
 									Encrypt
 								</Button>
-								<Button variant={detectionMode == 4 ? "dark" : detectionMode == 5 ? "secondary" : "outline-dark"} className='w-25' onClick={() => setDetectionMode(4)}>
+								<Button variant={detectionMode == 4 ? "dark" : detectionMode == 5 ? "secondary" : "outline-dark"} className='w-25' onClick={() => handleModeChange(4)}>
 									Decrypt
 								</Button>
 							</ButtonGroup>
