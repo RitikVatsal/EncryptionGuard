@@ -192,11 +192,11 @@ function App() {
 
 						<div className='d-flex mt-3'>
 							<Select options={generateKeyOptions()} value={keySelected} onChange={handleSelectChange} formatGroupLabel={formatGroupLabel} className='w-100 me-2' placeholder={`Select the key ${detectionMode == 1 ? "" : detectionMode == 2 ? "to encrypt" : "to decrypt"}`} />
-							<OverlayTrigger trigger='hover' placement='left' overlay={popover}>
-								<Button variant='dark' onClick={handleShow}>
-									+
-								</Button>
-							</OverlayTrigger>
+							{/* <OverlayTrigger trigger='hover' placement='left' overlay={popover}> */}
+							<Button variant='dark' onClick={handleShow}>
+								+
+							</Button>
+							{/* </OverlayTrigger> */}
 						</div>
 						{keySelectionError && <p className='text-danger'>Please select a key</p>}
 						<Form.Group className='mb-2 mt-3' controlId='form_keyName'>
