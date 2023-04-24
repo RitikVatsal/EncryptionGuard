@@ -25,7 +25,7 @@ function GeneralSettings() {
 
 			// Set save status to true for 3 seconds
 			setSaveStatus(true);
-			useTimeout(() => {
+			setTimeout(() => {
 				setSaveStatus(false);
 			}, 3000);
 		}
