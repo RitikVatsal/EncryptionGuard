@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 // Libraries
 import Select from "react-select";
 var CryptoJS = require("crypto-js");
 // Icons
 import { AiFillSetting } from "react-icons/ai";
+import { BsFillSkipEndFill, BsFullscreen } from "react-icons/bs";
 // Bootstrap Components
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -41,12 +42,13 @@ function App() {
 	const [convertedText, setConvertedText] = useState("");
 	const [autoCopyWorked, setAutoCopyWorked] = useState(false);
 	const [showShare, setShowShare] = useState(false);
+	const [showIntroVideo, setShowIntroVideo] = useState(false);
 
 	const handleClose = () => setAddKeyModalVisible(false);
 	const handleShow = () => setAddKeyModalVisible(true);
 
-	function encrypt(pllaintext, key) {
-		var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(pllaintext), key).toString();
+	function encrypt(plaintext, key) {
+		var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(plaintext), key).toString();
 		return ciphertext;
 	}
 
@@ -58,17 +60,22 @@ function App() {
 			return ciphertext;
 		}
 		// slice to remove extra quotes at beginning and end
-		return originalText.slice(1, -1);
+		return originalText.slice(1, -1).replace(/\\n/g, "\n");
 	}
 
 	const toggle_encrypt_or_decrypt = (text, key) => {
+		// manual selection: encrypt
 		if (detectionMode == 2) return encrypt(text, key);
+		// manual selection: decrypt
 		else if (detectionMode == 4) return decrypt(text, key);
+		// auto: encrypt
 		else if (is_text_plaintext(text)) {
 			setDetectionMode(3);
 			setStatus("Encrypted");
 			return encrypt(text, key);
-		} else {
+		}
+		// auto: decrypt
+		else {
 			setDetectionMode(5);
 			setStatus("Decrypted");
 			return decrypt(text, key);
@@ -115,7 +122,7 @@ function App() {
 	function is_text_plaintext(text) {
 		// ciphertext doesnt contain spaces and has length greater than 15
 		text = text.trim();
-		return text.includes(" ") || text.length < 15 ? true : false;
+		return text.includes(" ") || text.includes("\n") || text.length < 15 ? true : false;
 	}
 
 	const generateKeyOptions = () => {
@@ -135,6 +142,7 @@ function App() {
 		setStatus("");
 		if (detectionMode % 2 == 1) setDetectionMode(1);
 	};
+
 	const formatGroupLabel = (data) => (
 		<div className='groupStyles d-flex justify-content-between'>
 			<span>{data.label}</span>
@@ -158,80 +166,134 @@ function App() {
 		setStatus("");
 	};
 
+	const openFullscreenVideo = () => {
+		const url = chrome.runtime.getURL("./video.html");
+		chrome.tabs.create({ url });
+	};
+
+	const handleIntroClose = () => {
+		localStorage.setItem("IntroVideo", "true");
+		setShowIntroVideo(false);
+	};
+
+	useEffect(() => {
+		localStorage.removeItem("IntroVideo");
+
+		// Check if the variable is set to false in localStorage or even exists
+		if (!localStorage.getItem("IntroVideo")) {
+			setShowIntroVideo(true);
+			console.log("showing intro video");
+		}
+	}, []);
 	return (
 		<div className='App mt-4'>
-			<div className='d-flex justify-content-between mx-3'>
-				<h1 className='title w-100' style={{ color: "white" }}>
-					Encryption Guard
-				</h1>
-				<div className='center w-100 ms-0' style={{ zIndex: "99", top: "2.25%", transform: "scale(0.6)", left: "0%" }} onClick={() => setSettingsVisible(false)}>
-					<a href='#'>
-						<span data-attr='Encryption'>Encryption</span>
-						<span data-attr='Guard'>Guard</span>
-					</a>
-				</div>
-				<AiFillSetting className='settings-icon' onClick={() => setSettingsVisible(!settingsVisible)} />
-			</div>
-			{settingsVisible ? (
-				<Settings />
+			{showIntroVideo ? (
+				<>
+					<h1 className='title w-100 p-4'>
+						First, let's look how
+						<br />
+						Encryption Guard
+						<br />
+						helps...
+					</h1>
+					<iframe
+						title='How does Encryption Guard work?'
+						style={{
+							width: "100vw",
+							height: "calc(100vw * 1080 / 1920)",
+							border: "none",
+						}}
+						rel='preload'
+						className='loader'
+						as='video'
+					/>
+					<Button variant='dark' onClick={handleIntroClose} className='m-4 px-4'>
+						<div className='d-flex justify-content-center align-items-center'>
+							Skip <BsFillSkipEndFill className='ms-2' style={{ transform: "scale(1.5)" }} />
+						</div>
+					</Button>
+					<Button variant='outline-dark' onClick={openFullscreenVideo} className=' m-4 px-4'>
+						<div className='d-flex justify-content-center align-items-center'>
+							Fullscreen <BsFullscreen className='ms-2' />
+						</div>
+					</Button>
+				</>
 			) : (
 				<>
-					<Form noValidate validated={validated} className='m-3' onSubmit={handleSubmit} id='form'>
-						<div style={{ position: "relative" }}>
-							<FloatingLabel controlId='user_input_text' label={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"} here`} className='my-2'>
-								<Form.Control required as='textarea' placeholder={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"} here`} style={{ minHeight: anyFormError ? "275px" : "300px" }} onChange={handleInputChange} />
-								<Form.Control.Feedback type='invalid'>Please enter some text</Form.Control.Feedback>
-							</FloatingLabel>
-							{coptVisible && <CopyButton className='position-absolute bottom-0 end-0 mt-2 me-2' idOfElementToCopy='user_input_text' />}
-							{autoCopyWorked && (
-								<Button size='sm' className='position-absolute bottom-0 start-0 mb-2 ms-2' style={{ background: "#02b69c" }}>
-									Auto Copied!
-								</Button>
-							)}
+					<div className='d-flex justify-content-between mx-3'>
+						<h1 className='title w-100' style={{ color: "white" }}>
+							Encryption Guard
+						</h1>
+						<div className='center w-100 ms-0' style={{ zIndex: "99", top: "2.25%", transform: "scale(0.6)", left: "0%" }} onClick={() => setSettingsVisible(false)}>
+							<a href='#'>
+								<span data-attr='Encryption'>Encryption</span>
+								<span data-attr='Guard'>Guard</span>
+							</a>
 						</div>
+						<AiFillSetting className='settings-icon' onClick={() => setSettingsVisible(!settingsVisible)} />
+					</div>
+					{settingsVisible ? (
+						<Settings />
+					) : (
+						<>
+							<Form noValidate validated={validated} className='m-3' onSubmit={handleSubmit} id='form'>
+								<div style={{ position: "relative" }}>
+									<FloatingLabel controlId='user_input_text' label={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"} here`} className='my-2'>
+										<Form.Control required as='textarea' placeholder={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"} here`} style={{ minHeight: anyFormError ? "275px" : "300px" }} onChange={handleInputChange} />
+										<Form.Control.Feedback type='invalid'>Please enter some text</Form.Control.Feedback>
+									</FloatingLabel>
+									{coptVisible && <CopyButton className='position-absolute bottom-0 end-0 mt-2 me-2' idOfElementToCopy='user_input_text' />}
+									{autoCopyWorked && (
+										<Button size='sm' className='position-absolute bottom-0 start-0 mb-2 ms-2' style={{ background: "#02b69c" }}>
+											Auto Copied!
+										</Button>
+									)}
+								</div>
 
-						<div className='d-flex mt-3'>
-							<Select options={generateKeyOptions()} value={keySelected} onChange={handleSelectChange} formatGroupLabel={formatGroupLabel} className='w-100 me-2' placeholder={`Select the key ${detectionMode == 1 ? "" : detectionMode == 2 ? "to encrypt" : "to decrypt"}`} />
-							{/* <OverlayTrigger trigger='hover' placement='left' overlay={popover}> */}
-							<Button variant='dark' onClick={handleShow}>
-								+
-							</Button>
-							{/* </OverlayTrigger> */}
-						</div>
-						{keySelectionError && <p className='text-danger'>Please select a key</p>}
-						<Form.Group className='mb-2 mt-3' controlId='form_keyName'>
-							<span>Detection Mode</span>
-							<ButtonGroup className='mb-2 w-100'>
-								<Button variant={detectionMode % 2 == 1 ? "dark" : "outline-dark"} className='w-25' onClick={() => handleModeChange(1)}>
-									Auto
-								</Button>
-								<Button variant={detectionMode == 2 ? "dark" : detectionMode == 3 ? "secondary" : "outline-dark"} className='w-25' onClick={() => handleModeChange(2)}>
-									Encrypt
-								</Button>
-								<Button variant={detectionMode == 4 ? "dark" : detectionMode == 5 ? "secondary" : "outline-dark"} className='w-25' onClick={() => handleModeChange(4)}>
-									Decrypt
-								</Button>
-							</ButtonGroup>
-						</Form.Group>
+								<div className='d-flex mt-3'>
+									<Select options={generateKeyOptions()} value={keySelected} onChange={handleSelectChange} formatGroupLabel={formatGroupLabel} className='w-100 me-2' placeholder={`Select the key ${detectionMode == 1 ? "" : detectionMode == 2 ? "to encrypt" : "to decrypt"}`} />
+									{/* <OverlayTrigger trigger='hover' placement='left' overlay={popover}> */}
+									<Button variant='dark' onClick={handleShow}>
+										+
+									</Button>
+									{/* </OverlayTrigger> */}
+								</div>
+								{keySelectionError && <p className='text-danger'>Please select a key</p>}
+								<Form.Group className='mb-2 mt-3' controlId='form_keyName'>
+									<span>Detection Mode</span>
+									<ButtonGroup className='mb-2 w-100'>
+										<Button variant={detectionMode % 2 == 1 ? "dark" : "outline-dark"} className='w-25' onClick={() => handleModeChange(1)}>
+											Auto
+										</Button>
+										<Button variant={detectionMode == 2 ? "dark" : detectionMode == 3 ? "secondary" : "outline-dark"} className='w-25' onClick={() => handleModeChange(2)}>
+											Encrypt
+										</Button>
+										<Button variant={detectionMode == 4 ? "dark" : detectionMode == 5 ? "secondary" : "outline-dark"} className='w-25' onClick={() => handleModeChange(4)}>
+											Decrypt
+										</Button>
+									</ButtonGroup>
+								</Form.Group>
 
-						<button className={`button rounded w-100 mt-2 ${status == "Invalid Key/Ciphertext" ? "bg-danger" : status == "Encrypted" || status == "Decrypted" ? "bg-success" : ""}`} type='submit' onClick={() => document.getElementById("form").dispatchEvent(new Event("submit"))}>
-							<p className='btnText'>{status.length ? status : detectionMode == 2 ? "Encrypt" : detectionMode == 4 ? "Decrypt" : "Convert"}</p>
-							<div className='btnTwo'>
-								<p className='btnText2'>{status == "Invalid Key/Ciphertext" ? "😨" : status.length > 0 ? "👍" : "GO!"}</p>
-							</div>
-						</button>
-					</Form>
-					{showShare && <Share url={convertedText} />}
+								<button className={`button rounded w-100 mt-2 ${status == "Invalid Key/Ciphertext" ? "bg-danger" : status == "Encrypted" || status == "Decrypted" ? "bg-success" : ""}`} type='submit' onClick={() => document.getElementById("form").dispatchEvent(new Event("submit"))}>
+									<p className='btnText'>{status.length ? status : detectionMode == 2 ? "Encrypt" : detectionMode == 4 ? "Decrypt" : "Convert"}</p>
+									<div className='btnTwo'>
+										<p className='btnText2'>{status == "Invalid Key/Ciphertext" ? "😨" : status.length > 0 ? "👍" : "GO!"}</p>
+									</div>
+								</button>
+							</Form>
+							{showShare && <Share url={convertedText} />}
+						</>
+					)}
+					<Modal show={addKeyModalVisible} onHide={handleClose}>
+						<Modal.Header closeButton>
+							<Modal.Title>Add Keys</Modal.Title>
+						</Modal.Header>
+						<Modal.Body>
+							<AddKeys_modal />
+						</Modal.Body>
+					</Modal>
 				</>
 			)}
-			<Modal show={addKeyModalVisible} onHide={handleClose}>
-				<Modal.Header closeButton>
-					<Modal.Title>Add Keys</Modal.Title>
-				</Modal.Header>
-				<Modal.Body>
-					<AddKeys_modal />
-				</Modal.Body>
-			</Modal>
 		</div>
 	);
 }

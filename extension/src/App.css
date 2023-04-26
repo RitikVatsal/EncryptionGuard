@@ -183,7 +183,7 @@ a span:nth-child(2):after {
 	position: absolute;
 	top: 0;
 	left: 0;
-	background: #ff3636;
+	background: #ef233c;
 	padding: 15px;
 	transition: 0.5s;
 	transform-origin: top;
@@ -191,4 +191,12 @@ a span:nth-child(2):after {
 }
 a:hover span:nth-child(2):after {
 	transform: rotateX(90deg) translateY(-50%);
+}
+.loader {
+	position: relative;
+	/* background-image: url(./Images/IntroVideo_Thumbnail.png); */
+	background-image: url(./Images/tutorial.webp);
+	background-position: center;
+	background-size: contain;
+	background-repeat: no-repeat;
 }

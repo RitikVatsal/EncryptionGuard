@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
 import { VscKey } from "react-icons/vsc";
 import { RiFolderTransferLine } from "react-icons/ri";
-import { MdChevronLeft } from "react-icons/md";
+import { MdChevronLeft, MdOutlineInfo } from "react-icons/md";
+
 // Bootstrap components
 
 // Custom Components
@@ -25,10 +26,17 @@ function Settings() {
 				</div>
 			)}
 			{settingsPage < 10 ? (
-				<div className='m-3 mt-5'>
-					<SettingsNav icon={<IoSettingsOutline style={{ width: "20px", height: "20px" }} />} title='General' onClick={() => setSettingsPage(11)} />
-					<SettingsNav icon={<VscKey style={{ width: "20px", height: "20px" }} />} title='Key Management' onClick={() => setSettingsPage(12)} />
-					<SettingsNav icon={<RiFolderTransferLine style={{ width: "20px", height: "20px" }} />} title='Keys Import/Export' onClick={() => setSettingsPage(13)} />
+				<div className='mx-3 mt-5' style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: "80vh" }}>
+					<div>
+						<SettingsNav icon={<IoSettingsOutline style={{ width: "20px", height: "20px" }} />} title='General' onClick={() => setSettingsPage(11)} />
+						<SettingsNav icon={<VscKey style={{ width: "20px", height: "20px" }} />} title='Key Management' onClick={() => setSettingsPage(12)} />
+						<SettingsNav icon={<RiFolderTransferLine style={{ width: "20px", height: "20px" }} />} title='Keys Import/Export' onClick={() => setSettingsPage(13)} />
+					</div>
+					<div className='h-100 d-flex align-items-end w-100'>
+						<div className='w-100'>
+							<SettingsNav icon={<MdOutlineInfo />} title='About' />
+						</div>
+					</div>
 				</div>
 			) : settingsPage === 11 ? (
 				<GeneralSettings />
