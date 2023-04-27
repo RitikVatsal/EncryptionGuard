@@ -118,6 +118,10 @@ function App() {
 				}, 4000);
 			}
 			setShowShare(true);
+			// scroll to bottom of page
+			setTimeout(() => {
+				window.scrollTo(0, document.body.scrollHeight);
+			}, 200);
 		}
 	};
 
@@ -180,10 +184,8 @@ function App() {
 
 	const popover = (
 		<Popover id='popover-basic'>
-			<Popover.Header as='h3'>Popover right</Popover.Header>
-			<Popover.Body>
-				And here's some <strong>amazing</strong> content. It's very engaging. right?
-			</Popover.Body>
+			<Popover.Header as='h3'>Add New Keys</Popover.Header>
+			<Popover.Body>You must add seperate keys for each user you want to communicate in secure manner. Click the + icon to add a new key.</Popover.Body>
 		</Popover>
 	);
 
@@ -205,6 +207,7 @@ function App() {
 
 	const handleMasterPasswordSetup = (event) => {
 		event.preventDefault();
+		localStorage.setItem("AutoCopy", true);
 		const strongPassword = new RegExp("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})");
 		const password = event.target.masterPasswordInput.value;
 		if (strongPassword.test(password)) {
@@ -341,11 +344,11 @@ function App() {
 
 								<div className='d-flex mt-3'>
 									<Select options={generateKeyOptions()} value={keySelected} onChange={handleSelectChange} formatGroupLabel={formatGroupLabel} className='w-100 me-2' placeholder={`Select the key ${detectionMode == 1 ? "" : detectionMode == 2 ? "to encrypt" : "to decrypt"}`} />
-									{/* <OverlayTrigger trigger='hover' placement='left' overlay={popover}> */}
-									<Button variant='dark' onClick={handleShow}>
-										+
-									</Button>
-									{/* </OverlayTrigger> */}
+									<OverlayTrigger trigger='hover' placement='left' overlay={popover}>
+										<Button variant='dark' onClick={handleShow}>
+											+
+										</Button>
+									</OverlayTrigger>
 								</div>
 								{keySelectionError && <p className='text-danger'>Please select a key</p>}
 								<Form.Group className='mb-2 mt-3' controlId='form_keyName'>
