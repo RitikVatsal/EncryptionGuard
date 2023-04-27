@@ -24,6 +24,8 @@ function set_defaultOptions() {
 	}
 	return websiteOptions;
 }
+
+// Main function
 function AddKeys_modal() {
 	init_LocalStorage();
 	const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +34,6 @@ function AddKeys_modal() {
 	const [savedKeys, setSavedKeys] = useState(false);
 	const [validated, setValidated] = useState(false);
 	const [websiteOptionError, setWebsiteOptionError] = useState(false);
-	const [copy, setCopy] = useState(false);
 
 	const update_LocalStorage = (value) => {
 		let websiteOptions = JSON.parse(localStorage.getItem("websiteOptions"));

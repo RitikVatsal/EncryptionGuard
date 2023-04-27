@@ -36,8 +36,9 @@ function App() {
 	const [autoCopyWorked, setAutoCopyWorked] = useState(false);
 	const [showShare, setShowShare] = useState(false);
 	const [showIntroVideo, setShowIntroVideo] = useState(false);
-	const [masterPassword, setMasterPassword] = useState(localStorage.getItem("MasterPassword"));
+	const [masterPassword, setMasterPassword] = useState("password");
 	const [masterPasswordError, setMasterPasswordError] = useState(false);
+	const [authenticated, setAuthenticated] = useState(false);
 
 	const handleClose = () => setAddKeyModalVisible(false);
 	const handleShow = () => setAddKeyModalVisible(true);
@@ -208,6 +209,22 @@ function App() {
 			setMasterPasswordError(true);
 		}
 	};
+
+	const handleAuthentication = (event) => {
+		event.preventDefault();
+		const password = event.target.masterPasswordInput.value;
+		const hash = CryptoJS.SHA256(password);
+		const hashString = hash.toString(CryptoJS.enc.Hex);
+		if (localStorage.getItem("MasterPassword") === hashString) setAuthenticated(true);
+		else {
+			setMasterPasswordError(true);
+		}
+	};
+
+	const handleResetExtension = () => {
+		localStorage.clear();
+	};
+
 	return (
 		<div className='App mt-4'>
 			{showIntroVideo ? (
@@ -242,6 +259,7 @@ function App() {
 					</Button>
 				</>
 			) : masterPassword === null || masterPassword.length === 0 ? (
+				// setting up master password
 				<>
 					<h1 className='title w-100 p-4'>Let's get you started!</h1>
 					<Form className='m-3' onSubmit={handleMasterPasswordSubmit} id='form'>
@@ -261,7 +279,7 @@ function App() {
 						</Alert>
 					</Form>
 				</>
-			) : (
+			) : authenticated ? (
 				<>
 					<div className='d-flex justify-content-between mx-3'>
 						<h1 className='title w-100' style={{ color: "white" }}>
@@ -281,8 +299,8 @@ function App() {
 						<>
 							<Form noValidate validated={validated} className='m-3' onSubmit={handleSubmit} id='form'>
 								<div style={{ position: "relative" }}>
-									<FloatingLabel controlId='user_input_text' label={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"} here`} className='my-2'>
-										<Form.Control required as='textarea' placeholder={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"} here`} style={{ minHeight: anyFormError ? "275px" : "300px" }} onChange={handleInputChange} />
+									<FloatingLabel controlId='user_input_text' label={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"}`} className='my-2'>
+										<Form.Control required as='textarea' placeholder={`Enter your ${detectionMode == 1 ? "plaintext/ciphertext" : detectionMode == 2 ? "plaintext" : "ciphertext"}`} style={{ minHeight: anyFormError ? "275px" : "300px" }} onChange={handleInputChange} />
 										<Form.Control.Feedback type='invalid'>Please enter some text</Form.Control.Feedback>
 									</FloatingLabel>
 									{coptVisible && <CopyButton className='position-absolute bottom-0 end-0 mt-2 me-2' idOfElementToCopy='user_input_text' />}
@@ -335,6 +353,29 @@ function App() {
 							<AddKeys_modal />
 						</Modal.Body>
 					</Modal>
+				</>
+			) : (
+				<>
+					<h1 className='title w-100 p-4'>LOGIN</h1>
+					<Form className='m-3' onSubmit={handleAuthentication} id='form'>
+						<FloatingLabel controlId='masterPasswordInput' label='Enter Password'>
+							<Form.Control type='password' placeholder='Password' onChange={() => setMasterPasswordError(false)} />
+							{masterPasswordError ? <p className='text-danger'>Incorrect Password</p> : ""}
+						</FloatingLabel>
+
+						<Button variant='dark' type='submit' className='m-4 px-4'>
+							Login
+						</Button>
+
+						<Alert variant='danger' className='mx-2 mt-4'>
+							<Alert.Heading>Forgot your password?</Alert.Heading>
+							<hr />
+							<p>Please Note: resetting your password will erase all your current keys. If you have a backup then you can restore your keys by uploading your keys.json file in Settings.</p>
+							<Button variant='danger' onClick={handleResetExtension}>
+								Reset
+							</Button>
+						</Alert>
+					</Form>
 				</>
 			)}
 		</div>
