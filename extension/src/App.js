@@ -36,7 +36,7 @@ function App() {
 	const [autoCopyWorked, setAutoCopyWorked] = useState(false);
 	const [showShare, setShowShare] = useState(false);
 	const [showIntroVideo, setShowIntroVideo] = useState(false);
-	const [masterPassword, setMasterPassword] = useState("password");
+	const [masterPassword, setMasterPassword] = useState("default");
 	const [masterPasswordError, setMasterPasswordError] = useState(false);
 	const [authenticated, setAuthenticated] = useState(false);
 
@@ -197,7 +197,7 @@ function App() {
 		}
 	}, []);
 
-	const handleMasterPasswordSubmit = (event) => {
+	const handleMasterPasswordSetup = (event) => {
 		event.preventDefault();
 		const strongPassword = new RegExp("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})");
 		const password = event.target.masterPasswordInput.value;
@@ -205,6 +205,7 @@ function App() {
 			setMasterPasswordError(false);
 			localStorage.setItem("MasterPassword", CryptoJS.SHA256(password));
 			setMasterPassword(password);
+			event.target.masterPasswordInput.value = "";
 		} else {
 			setMasterPasswordError(true);
 		}
@@ -223,6 +224,7 @@ function App() {
 
 	const handleResetExtension = () => {
 		localStorage.clear();
+		chrome.runtime.reload();
 	};
 
 	return (
@@ -230,11 +232,11 @@ function App() {
 			{showIntroVideo ? (
 				<>
 					<h1 className='title w-100 p-4'>
-						First, let's look how
+						First, let's look see how
 						<br />
 						Encryption Guard
 						<br />
-						helps...
+						works...
 					</h1>
 					<iframe
 						title='How does Encryption Guard work?'
@@ -262,7 +264,7 @@ function App() {
 				// setting up master password
 				<>
 					<h1 className='title w-100 p-4'>Let's get you started!</h1>
-					<Form className='m-3' onSubmit={handleMasterPasswordSubmit} id='form'>
+					<Form className='m-3' onSubmit={handleMasterPasswordSetup} id='form'>
 						<FloatingLabel controlId='masterPasswordInput' label='Enter Password'>
 							<Form.Control type='password' placeholder='Password' />
 							<p className={masterPasswordError ? "text-danger" : "text-secondary"}>{masterPasswordError ? <MdError /> : ""} Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.</p>
