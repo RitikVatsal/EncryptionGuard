@@ -6,7 +6,9 @@ var CryptoJS = require("crypto-js");
 // Icons
 import { AiFillSetting } from "react-icons/ai";
 import { BsFillSkipEndFill, BsFullscreen } from "react-icons/bs";
+import { MdError } from "react-icons/md";
 // Bootstrap Components
+import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
@@ -19,15 +21,6 @@ import CopyButton from "./Components/copyButton";
 import Share from "./Components/Share";
 import AddKeys_modal from "./Pages/AddKeys_modal";
 import Settings from "./Pages/Settings";
-
-const popover = (
-	<Popover id='popover-basic'>
-		<Popover.Header as='h3'>Popover right</Popover.Header>
-		<Popover.Body>
-			And here's some <strong>amazing</strong> content. It's very engaging. right?
-		</Popover.Body>
-	</Popover>
-);
 
 function App() {
 	const [addKeyModalVisible, setAddKeyModalVisible] = useState(false);
@@ -43,6 +36,8 @@ function App() {
 	const [autoCopyWorked, setAutoCopyWorked] = useState(false);
 	const [showShare, setShowShare] = useState(false);
 	const [showIntroVideo, setShowIntroVideo] = useState(false);
+	const [masterPassword, setMasterPassword] = useState(localStorage.getItem("MasterPassword"));
+	const [masterPasswordError, setMasterPasswordError] = useState(false);
 
 	const handleClose = () => setAddKeyModalVisible(false);
 	const handleShow = () => setAddKeyModalVisible(true);
@@ -176,15 +171,43 @@ function App() {
 		setShowIntroVideo(false);
 	};
 
+	const popover = (
+		<Popover id='popover-basic'>
+			<Popover.Header as='h3'>Popover right</Popover.Header>
+			<Popover.Body>
+				And here's some <strong>amazing</strong> content. It's very engaging. right?
+			</Popover.Body>
+		</Popover>
+	);
+
 	useEffect(() => {
-		localStorage.removeItem("IntroVideo");
+		// localStorage.removeItem("IntroVideo");
+		// localStorage.removeItem("MasterPassword");
 
 		// Check if the variable is set to false in localStorage or even exists
 		if (!localStorage.getItem("IntroVideo")) {
 			setShowIntroVideo(true);
 			console.log("showing intro video");
 		}
+
+		// check if masterPassword is set
+		if (!localStorage.getItem("MasterPassword")) {
+			setMasterPassword(null);
+		}
 	}, []);
+
+	const handleMasterPasswordSubmit = (event) => {
+		event.preventDefault();
+		const strongPassword = new RegExp("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})");
+		const password = event.target.masterPasswordInput.value;
+		if (strongPassword.test(password)) {
+			setMasterPasswordError(false);
+			localStorage.setItem("MasterPassword", CryptoJS.SHA256(password));
+			setMasterPassword(password);
+		} else {
+			setMasterPasswordError(true);
+		}
+	};
 	return (
 		<div className='App mt-4'>
 			{showIntroVideo ? (
@@ -217,6 +240,26 @@ function App() {
 							Fullscreen <BsFullscreen className='ms-2' />
 						</div>
 					</Button>
+				</>
+			) : masterPassword === null || masterPassword.length === 0 ? (
+				<>
+					<h1 className='title w-100 p-4'>Let's get you started!</h1>
+					<Form className='m-3' onSubmit={handleMasterPasswordSubmit} id='form'>
+						<FloatingLabel controlId='masterPasswordInput' label='Enter Password'>
+							<Form.Control type='password' placeholder='Password' />
+							<p className={masterPasswordError ? "text-danger" : "text-secondary"}>{masterPasswordError ? <MdError /> : ""} Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.</p>
+						</FloatingLabel>
+
+						<Button variant='dark' type='submit' className='m-4 px-4'>
+							Complete Setup!
+						</Button>
+
+						<Alert variant='warning' className='mx-2 mt-4'>
+							<Alert.Heading>Important Alert</Alert.Heading>
+							<hr />
+							<p>Please remember this password. If you lose this password, there is no way to reset it.</p>
+						</Alert>
+					</Form>
 				</>
 			) : (
 				<>
