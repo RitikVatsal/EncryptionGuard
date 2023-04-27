@@ -258,7 +258,7 @@ function App() {
 			{showIntroVideo ? (
 				<>
 					<h1 className='title w-100 p-4'>
-						First, let's look see how
+						First, let's see how
 						<br />
 						Encryption Guard
 						<br />
@@ -293,7 +293,7 @@ function App() {
 					<Form className='m-3' onSubmit={handleMasterPasswordSetup} id='form'>
 						<FloatingLabel controlId='masterPasswordInput' label='Enter Password'>
 							<Form.Control type='password' placeholder='Password' />
-							<p className={masterPasswordError ? "text-danger" : "text-secondary"}>{masterPasswordError ? <MdError /> : ""} Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.</p>
+							<p className={masterPasswordError ? "text-danger" : "text-secondary"}>{masterPasswordError ? <MdError /> : ""} Your password must be 8-20 characters long, contain atleast an uppercase, a lowercase, a number and a special character.</p>
 						</FloatingLabel>
 
 						<Button variant='dark' type='submit' className='m-4 px-4'>
