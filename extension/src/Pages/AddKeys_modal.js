@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { generatePassword } from "@nikitababko/password-generator";
 import CopyButton from "../Components/copyButton";
+var CryptoJS = require("crypto-js");
 
 function init_LocalStorage() {
 	if (!localStorage.getItem("websiteOptions")) {
@@ -26,7 +27,7 @@ function set_defaultOptions() {
 }
 
 // Main function
-function AddKeys_modal() {
+function AddKeys_modal(props) {
 	init_LocalStorage();
 	const [isLoading, setIsLoading] = useState(false);
 	const [websiteOptions, setWebsiteOptions] = useState(set_defaultOptions());
@@ -77,11 +78,12 @@ function AddKeys_modal() {
 			const entered_website = websiteValue.value;
 			const entered_keyName = event.target.form_keyName.value;
 			const entered_key = event.target.form_key.value;
-
+			// encrypt the key using master password and AES
+			const encrypted_key = CryptoJS.AES.encrypt(entered_key, props.masterPassword).toString();
 			let Keys = JSON.parse(localStorage.getItem("Keys"));
 			if (!Keys) Keys = {};
 			if (!Keys[entered_website]) Keys[entered_website] = {};
-			Keys[entered_website][entered_keyName] = entered_key;
+			Keys[entered_website][entered_keyName] = encrypted_key;
 			localStorage.setItem("Keys", JSON.stringify(Keys));
 
 			setSavedKeys(true);

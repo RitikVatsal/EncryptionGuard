@@ -6,7 +6,9 @@ import NoKeys from "../Images/3973480.svg";
 import { confirmAlert } from "react-confirm-alert"; // Import
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 import "../Components/Settings.css";
-function KeyManagement() {
+var CryptoJS = require("crypto-js");
+
+function KeyManagement(props) {
 	const [keys, setKeys] = useState(JSON.parse(localStorage.getItem("Keys")) || {});
 	const [show, setShow] = useState(true);
 
@@ -39,13 +41,20 @@ function KeyManagement() {
 		});
 	};
 
+	function decrypt(ciphertext, key) {
+		var bytes = CryptoJS.AES.decrypt(ciphertext, key);
+		var originalText = bytes.toString(CryptoJS.enc.Utf8);
+		return originalText;
+	}
+
 	function generateTable(website, Keys) {
+		console.log(props.a);
 		let table = [];
 		for (let key_name in Keys[website]) {
 			table.push(
 				<tr key={website + "-" + key_name}>
 					<td>{key_name}</td>
-					<td>{Keys[website][key_name]}</td>
+					<td>{decrypt(Keys[website][key_name], props.masterPassword)}</td>
 					<td>
 						<MdDelete className='delete-icon' style={{ width: "25px", height: "25px" }} id={website + "-" + key_name} onClick={() => handleDelete(website, key_name)} />
 					</td>

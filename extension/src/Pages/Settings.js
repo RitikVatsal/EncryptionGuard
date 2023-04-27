@@ -15,7 +15,7 @@ import ImportExportKeys from "./ImportExportKeys";
 
 import "../Components/Settings.css";
 
-function Settings() {
+function Settings(props) {
 	const [settingsPage, setSettingsPage] = useState(0);
 	return (
 		<>
@@ -41,9 +41,9 @@ function Settings() {
 			) : settingsPage === 11 ? (
 				<GeneralSettings />
 			) : settingsPage === 12 ? (
-				<KeyManagement />
+				<KeyManagement masterPassword={props.masterPassword} />
 			) : settingsPage === 13 ? (
-				<ImportExportKeys />
+				<ImportExportKeys masterPassword={props.masterPassword} />
 			) : null}
 		</>
 	);

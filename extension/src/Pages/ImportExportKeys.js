@@ -3,13 +3,25 @@ import Button from "react-bootstrap/Button";
 import { BsDownload } from "react-icons/bs";
 import Form from "react-bootstrap/Form";
 import Alert from "react-bootstrap/Alert";
-import { confirmAlert } from "react-confirm-alert"; // Import
-import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
+var CryptoJS = require("crypto-js");
 
-function ImportExportKeys() {
+function decrypt(ciphertext, key) {
+	var bytes = CryptoJS.AES.decrypt(ciphertext, key);
+	var originalText = bytes.toString(CryptoJS.enc.Utf8);
+	return originalText;
+}
+
+function ImportExportKeys(props) {
 	const [importSuccess, setImportSuccess] = useState(false);
 	const exportKeys = () => {
 		const keys = JSON.parse(localStorage.getItem("Keys"));
+		for (let website in keys) {
+			for (let key_name in keys[website]) {
+				keys[website][key_name] = decrypt(keys[website][key_name], props.masterPassword);
+			}
+		}
 		const element = document.createElement("a");
 		const file = new Blob([JSON.stringify(keys)], { type: "text/json" });
 		element.href = URL.createObjectURL(file);
@@ -23,6 +35,11 @@ function ImportExportKeys() {
 		const reader = new FileReader();
 		reader.onload = () => {
 			const importedKeys = JSON.parse(reader.result);
+			for (let website in importedKeys) {
+				for (let key_name in importedKeys[website]) {
+					importedKeys[website][key_name] = CryptoJS.AES.encrypt(importedKeys[website][key_name], props.masterPassword).toString();
+				}
+			}
 			if (localStorage.getItem("Keys")) {
 				confirmAlert({
 					title: "Existing Keys Found",
@@ -43,12 +60,23 @@ function ImportExportKeys() {
 							onClick: () => {
 								//TODO: handle duplicates also
 								const existingKeys = JSON.parse(localStorage.getItem("Keys"));
+								// if website does not already exist, add it
 								for (let website in importedKeys) {
-									for (let key_name in importedKeys[website]) {
-										existingKeys[website][key_name] = importedKeys[website][key_name];
+									if (!existingKeys[website]) {
+										existingKeys[website] = importKeys[website];
+									} else {
+										for (let key_name in importedKeys[website]) {
+											// duplicate name
+											if (existingKeys[website][key_name]) {
+												// duplicate name, different key
+												if (decrypt(existingKeys[website][key_name], props.masterPassword) !== decrypt(importedKeys[website][key_name], props.masterPassword)) {
+													existingKeys[website][key_name + "_imported"] = importedKeys[website][key_name];
+												}
+											} else existingKeys[website][key_name] = importedKeys[website][key_name];
+										}
 									}
 								}
-								// localStorage.setItem("Keys", JSON.stringify(existingKeys));
+								localStorage.setItem("Keys", JSON.stringify(existingKeys));
 								setImportSuccess(true);
 								setTimeout(() => {
 									setImportSuccess(false);
@@ -88,10 +116,9 @@ function ImportExportKeys() {
 			</div>
 
 			<Alert variant='warning' className='mx-3'>
-				<Alert.Heading>Hey, nice to see you</Alert.Heading>
-				<p>how to migrate keys to different device</p>
+				<Alert.Heading>Warning</Alert.Heading>
 				<hr />
-				<p className='mb-0'>need to export keys on frequest basis, for backup</p>
+				<p className='mb-0'>Do not share your exported keys.json file with anyone.</p>
 			</Alert>
 		</div>
 	);

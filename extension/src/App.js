@@ -16,6 +16,8 @@ import Modal from "react-bootstrap/Modal";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 // Custom Components
 import CopyButton from "./Components/copyButton";
 import Share from "./Components/Share";
@@ -60,6 +62,10 @@ function App() {
 	}
 
 	const toggle_encrypt_or_decrypt = (text, key) => {
+		// decrypt key using masterPassword and AES
+		var bytes = CryptoJS.AES.decrypt(key, masterPassword);
+		key = bytes.toString(CryptoJS.enc.Utf8);
+
 		// manual selection: encrypt
 		if (detectionMode == 2) return encrypt(text, key);
 		// manual selection: decrypt
@@ -126,7 +132,7 @@ function App() {
 		let keyOptions = [];
 		for (let website in keys) {
 			let options = [];
-			for (let key in keys[website]) options.push({ value: key, label: key });
+			for (let key in keys[website]) options.push({ value: keys[website][key], label: key });
 			keyOptions.push({ label: website, options: options });
 		}
 		return keyOptions;
@@ -204,8 +210,9 @@ function App() {
 		if (strongPassword.test(password)) {
 			setMasterPasswordError(false);
 			localStorage.setItem("MasterPassword", CryptoJS.SHA256(password));
-			setMasterPassword(password);
 			event.target.masterPasswordInput.value = "";
+			setMasterPassword(password);
+			setAuthenticated(true);
 		} else {
 			setMasterPasswordError(true);
 		}
@@ -216,15 +223,34 @@ function App() {
 		const password = event.target.masterPasswordInput.value;
 		const hash = CryptoJS.SHA256(password);
 		const hashString = hash.toString(CryptoJS.enc.Hex);
-		if (localStorage.getItem("MasterPassword") === hashString) setAuthenticated(true);
-		else {
+		if (localStorage.getItem("MasterPassword") === hashString) {
+			setMasterPassword(password);
+			setAuthenticated(true);
+		} else {
 			setMasterPasswordError(true);
 		}
 	};
 
 	const handleResetExtension = () => {
-		localStorage.clear();
-		chrome.runtime.reload();
+		confirmAlert({
+			title: "Are you sure?",
+			message: `The following action will reset your account.`,
+			buttons: [
+				{
+					label: "Yes",
+					onClick: () => {
+						localStorage.clear();
+						chrome.runtime.reload();
+					},
+				},
+				{
+					label: "Cancel",
+					onClick: () => {
+						return;
+					},
+				},
+			],
+		});
 	};
 
 	return (
@@ -296,7 +322,7 @@ function App() {
 						<AiFillSetting className='settings-icon' onClick={() => setSettingsVisible(!settingsVisible)} />
 					</div>
 					{settingsVisible ? (
-						<Settings />
+						<Settings masterPassword={masterPassword} />
 					) : (
 						<>
 							<Form noValidate validated={validated} className='m-3' onSubmit={handleSubmit} id='form'>
@@ -352,7 +378,7 @@ function App() {
 							<Modal.Title>Add Keys</Modal.Title>
 						</Modal.Header>
 						<Modal.Body>
-							<AddKeys_modal />
+							<AddKeys_modal masterPassword={masterPassword} />
 						</Modal.Body>
 					</Modal>
 				</>
