@@ -88,8 +88,8 @@ function KeyManagement() {
 			{show ? (
 				<Accordion className='mt-3'>{generateAccordion()}</Accordion>
 			) : (
-				<div className='d-flex flex-column align-items-center justify-content-center'>
-					<img src={NoKeys} alt='Keys Missing Image' style={{ transform: "scale(0.4)", marginBottom: "-150px" }} />
+				<div className='mt-4 d-flex flex-column align-items-center justify-content-center'>
+					<img src={NoKeys} alt='Keys Missing Image' height='150px' width='auto' />
 					<h1 className='text-center mt-5'>No Keys Found</h1>
 				</div>
 			)}
