@@ -12,6 +12,7 @@ import SettingsNav from "../Components/SettingsNav";
 import GeneralSettings from "./GeneralSettings";
 import KeyManagement from "./KeyManagement";
 import ImportExportKeys from "./ImportExportKeys";
+import About from "./About";
 
 import "../Components/Settings.css";
 
@@ -34,7 +35,7 @@ function Settings(props) {
 					</div>
 					<div className='h-100 d-flex align-items-end w-100'>
 						<div className='w-100'>
-							<SettingsNav icon={<MdOutlineInfo />} title='About' />
+							<SettingsNav icon={<MdOutlineInfo />} title='About' onClick={() => setSettingsPage(14)} />
 						</div>
 					</div>
 				</div>
@@ -44,6 +45,8 @@ function Settings(props) {
 				<KeyManagement masterPassword={props.masterPassword} />
 			) : settingsPage === 13 ? (
 				<ImportExportKeys masterPassword={props.masterPassword} />
+			) : settingsPage === 14 ? (
+				<About />
 			) : null}
 		</>
 	);
