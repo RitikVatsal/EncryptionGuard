@@ -1,0 +1,19 @@
+{
+	"manifest_version": 3,
+	"short_name": "React App",
+	"name": "Encryption Guard",
+	"description": "Encrypt your messages with a password",
+	"version": "1.0.0",
+	"icons": {
+		"16": "icon.png",
+		"32": "icon.png",
+		"48": "icon.png",
+		"128": "icon.png"
+	},
+	"action": {
+		"default_popup": "popup.html",
+		"default_title": "Encryption Guard",
+		"default_icon": "icon.png"
+	},
+	"permissions": ["activeTab"]
+}
