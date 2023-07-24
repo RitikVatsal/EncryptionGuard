@@ -1,7 +1,7 @@
 # ENCRYPTION GUARD
-[poster1](./Mid-semester_Poster.png)
+![Research](./Mid-semester_Poster.png "Research Poster")
 
-[poster2](./Final_Poster.png)
+![Project Showcase](./Final_Poster.png "Project Showcase")
 
 # DEVELOPMENT
 
