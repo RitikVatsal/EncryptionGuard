@@ -1,3 +1,8 @@
+# ENCRYPTION GUARD
+[poster1](./Mid-semester Poster.png)
+
+[poster2](./Final Poster.png)
+
 # DEVELOPMENT
 
 ## Development Mode
@@ -12,4 +17,3 @@ In /extension, $npm run build
 
 # USABILITY STUDIES
 [presentation](https://docs.google.com/presentation/d/1_oiT_SsMxzlV-dqO6zRk5P975l2YSuHHvyALm66uWfU/edit?usp=sharing)
-
